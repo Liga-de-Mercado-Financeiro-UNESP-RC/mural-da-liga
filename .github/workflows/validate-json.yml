@@ -1,0 +1,62 @@
+name: Validar PRs de Assinaturas
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  validate-json:
+    runs-on: ubuntu-latest
+    name: Validar estrutura e alterações do data.json
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v3
+
+      - name: Instalar Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Instalar dependências
+        run: npm install jsonlint --global
+
+      - name: Verificar arquivos modificados
+        id: files
+        run: |
+          echo "::group::Arquivos modificados"
+          FILES=$(git diff --name-only origin/main...HEAD)
+          echo "$FILES"
+          echo "::endgroup::"
+          echo "FILES<<EOF" >> $GITHUB_ENV
+          echo "$FILES" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Validar que apenas data.json foi alterado
+        run: |
+          echo "$FILES" | grep -q '^data.json$' || {
+            echo "❌ Apenas o arquivo data.json deve ser alterado." >&2
+            exit 1
+          }
+
+      - name: Validar que o JSON está bem formado
+        run: |
+          jsonlint data.json -q
+
+      - name: Garantir que nenhuma entrada foi removida
+        run: |
+          git fetch origin main
+          git checkout origin/main -- data.json
+          mv data.json data.main.json
+          git checkout $GITHUB_HEAD_REF -- data.json
+          mv data.json data.pr.json
+
+          ADDED=$(jq --slurp '.[1] - .[0]' data.main.json data.pr.json)
+          REMOVED=$(jq --slurp '.[0] - .[1]' data.main.json data.pr.json)
+
+          echo "Entradas adicionadas: $ADDED"
+          echo "Entradas removidas: $REMOVED"
+
+          if [ "$(echo $REMOVED | jq 'length')" -gt 0 ]; then
+            echo "❌ Entradas foram removidas do JSON. Revisão manual necessária." >&2
+            exit 1
+          fi
