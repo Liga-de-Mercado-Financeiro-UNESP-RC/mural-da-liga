@@ -1,11 +1,12 @@
-fetch('data.json')
+fetch('members.json')
   .then(response => response.json())
   .then(data => {
-    const lista = document.getElementById('assinaturas');
+    const container = document.getElementById('assinaturas');
     data.forEach(item => {
-      const li = document.createElement('li');
-      li.textContent = `${item.nome} - "${item.mensagem}"`;
-      lista.appendChild(li);
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `<strong>${item.nome}</strong><p>"${item.mensagem}"</p>`;
+      container.appendChild(card);
     });
   })
   .catch(error => {
