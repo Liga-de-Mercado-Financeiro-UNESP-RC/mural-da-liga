@@ -24,8 +24,9 @@ jobs:
         id: files
         run: |
           echo "::group::Arquivos modificados"
-          git fetch --unshallow origin main || git fetch origin main
-          FILES=$(git diff --name-only origin/main...HEAD || echo "")
+          git fetch --unshallow origin || git fetch origin
+          DEFAULT_BRANCH=$(git remote show origin | grep 'HEAD branch' | awk '{print $NF}')
+          FILES=$(git diff --name-only origin/$DEFAULT_BRANCH...HEAD || echo "")
           echo "$FILES"
           echo "::endgroup::"
           echo "FILES<<EOF" >> $GITHUB_ENV
@@ -45,18 +46,19 @@ jobs:
 
       - name: Garantir que nenhuma entrada foi removida
         run: |
-          git fetch origin main
-          git checkout origin/main -- members.json
+          git fetch origin
+          DEFAULT_BRANCH=$(git remote show origin | grep 'HEAD branch' | awk '{print $NF}')
+          git checkout origin/$DEFAULT_BRANCH -- members.json
           mv members.json data.main.json
           git checkout $GITHUB_HEAD_REF -- members.json
           mv members.json data.pr.json
-
+      
           ADDED=$(jq --slurp '.[1] - .[0]' data.main.json data.pr.json)
           REMOVED=$(jq --slurp '.[0] - .[1]' data.main.json data.pr.json)
-
+      
           echo "Entradas adicionadas: $ADDED"
           echo "Entradas removidas: $REMOVED"
-
+      
           if [ "$(echo $REMOVED | jq 'length')" -gt 0 ]; then
             echo "❌ Entradas foram removidas do JSON. Revisão manual necessária." >&2
             exit 1
