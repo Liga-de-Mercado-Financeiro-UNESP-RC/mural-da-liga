@@ -60,3 +60,26 @@ jobs:
             echo "❌ Entradas foram removidas do JSON. Revisão manual necessária." >&2
             exit 1
           fi
+
+  auto-merge:
+    needs: validate-json
+    if: ${{ success() && github.event.pull_request.head.repo.full_name == github.repository }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Merge automático de PR válido
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const pr = context.payload.pull_request;
+            const result = await github.rest.pulls.merge({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number,
+              merge_method: 'squash'
+            });
+            if (result.status === 200) {
+              console.log(`✅ PR #${pr.number} mergeado automaticamente.`);
+            } else {
+              console.log(`❌ Falha ao fazer merge automático.`);
+            }
