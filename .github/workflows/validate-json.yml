@@ -24,9 +24,8 @@ jobs:
         id: files
         run: |
           echo "::group::Arquivos modificados"
-          # Ensure the main branch is fetched
-          git fetch origin main
-          FILES=$(git diff --name-only origin/main...HEAD)
+          git fetch --unshallow origin main || git fetch origin main
+          FILES=$(git diff --name-only origin/main...HEAD || echo "")
           echo "$FILES"
           echo "::endgroup::"
           echo "FILES<<EOF" >> $GITHUB_ENV
