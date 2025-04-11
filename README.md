@@ -25,7 +25,7 @@ Bem-vindo(a)! Este projeto é uma página simples que lista os nomes dos partici
 7. Clique em “**Create pull request**” — pronto!
 
 ## 🌐 Veja a página publicada aqui:
-👉 [link-do-github-pages](#)
+👉 [link-do-github-pages](https://liga-de-mercado-financeiro-unesp-rc.github.io/mural-da-liga/)
 
 ---
 
