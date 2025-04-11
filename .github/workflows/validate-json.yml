@@ -7,7 +7,7 @@ on:
 jobs:
   validate-json:
     runs-on: ubuntu-latest
-    name: Validar estrutura e alterações do data.json
+    name: Validar estrutura e alterações do members.json
     steps:
       - name: Checkout do código
         uses: actions/checkout@v3
@@ -31,24 +31,24 @@ jobs:
           echo "$FILES" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
-      - name: Validar que apenas data.json foi alterado
+      - name: Validar que apenas members.json foi alterado
         run: |
-          echo "$FILES" | grep -q '^data.json$' || {
-            echo "❌ Apenas o arquivo data.json deve ser alterado." >&2
+          echo "$FILES" | grep -q '^members.json$' || {
+            echo "❌ Apenas o arquivo members.json deve ser alterado." >&2
             exit 1
           }
 
       - name: Validar que o JSON está bem formado
         run: |
-          jsonlint data.json -q
+          jsonlint members.json -q
 
       - name: Garantir que nenhuma entrada foi removida
         run: |
           git fetch origin main
-          git checkout origin/main -- data.json
-          mv data.json data.main.json
-          git checkout $GITHUB_HEAD_REF -- data.json
-          mv data.json data.pr.json
+          git checkout origin/main -- members.json
+          mv members.json data.main.json
+          git checkout $GITHUB_HEAD_REF -- members.json
+          mv members.json data.pr.json
 
           ADDED=$(jq --slurp '.[1] - .[0]' data.main.json data.pr.json)
           REMOVED=$(jq --slurp '.[0] - .[1]' data.main.json data.pr.json)
