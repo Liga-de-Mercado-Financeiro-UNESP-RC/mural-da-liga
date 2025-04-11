@@ -20,7 +20,7 @@ Bem-vindo(a)! Este projeto é uma página simples que lista os nomes dos partici
    }
    ```
    **Obs:** Não esqueça de separar os itens com vírgula, conforme o padrão do JSON.
-5. Vá até o final da página, escreva uma mensagem de commit (ex: `adiciona assinatura do Fulano`) e clique em “Commit changes”.
+5. Clique em “Commit changes”, escreva uma mensagem de commit (ex: `adiciona assinatura do Fulano`) e crie seu commit.
 6. Volte para a página principal do seu fork e clique em “**Contribute > Open pull request**”.
 7. Clique em “**Create pull request**” — pronto!
 
