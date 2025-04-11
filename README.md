@@ -10,7 +10,7 @@ Bem-vindo(a)! Este projeto é uma página simples que lista os nomes dos partici
 ## 📌 Passo a passo
 
 1. Faça um **fork** deste repositório (clique no botão “Fork” no canto superior direito).
-2. Acesse o arquivo [`data.json`](./data.json) no seu fork.
+2. Acesse o arquivo [`members.json`](./members.json) no seu fork.
 3. Clique em ✏️ “Editar este arquivo”.
 4. Adicione um novo objeto no final da lista, assim:
    ```json
